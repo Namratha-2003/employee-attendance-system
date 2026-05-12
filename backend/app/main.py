@@ -11,11 +11,9 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Employee Attendance API")
 
 origins = [
-    os.getenv("FRONTEND_ORIGIN", "http://localhost:5173"),
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "https://courageous-chebakia-4cfc48.netlify.app",
-    "https://employee-attendance-system-1-yl3w.onrender.com",
 ]
 
 app.add_middleware(
