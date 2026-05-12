@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,12 +8,6 @@ load_dotenv()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Employee Attendance API")
-
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://courageous-chebakia-4cfc48.netlify.app",
-]
 
 app.add_middleware(
     CORSMiddleware,
