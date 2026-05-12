@@ -14,6 +14,7 @@ origins = [
     os.getenv("FRONTEND_ORIGIN", "http://localhost:5173"),
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://employee-attendance-system-1-yl3w.onrender.com",
 ]
 
 app.add_middleware(
