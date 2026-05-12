@@ -1,37 +1,27 @@
 import os
-import smtplib
-from email.message import EmailMessage
+import resend
 from dotenv import load_dotenv
 
 load_dotenv()
 
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 
 def _send_email(to_email: str, subject: str, body: str) -> bool:
-    smtp_host = os.getenv("SMTP_HOST", "")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-    smtp_user = os.getenv("SMTP_USER", "")
-    smtp_password = os.getenv("SMTP_PASSWORD", "")
-    from_email = os.getenv("FROM_EMAIL", smtp_user)
+    try:
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": to_email,
+            "subject": subject,
+            "html": body.replace("\n", "<br>")
+        })
 
-    if not smtp_host or not smtp_user or not smtp_password or not from_email:
-        print("\nEMAIL NOT CONFIGURED")
-        print(f"To: {to_email}")
-        print(f"Subject: {subject}")
-        print(body)
-        print()
+        print("Email sent successfully")
+        return True
+
+    except Exception as e:
+        print("EMAIL ERROR:", str(e))
         return False
-
-    msg = EmailMessage()
-    msg["Subject"] = subject
-    msg["From"] = from_email
-    msg["To"] = to_email
-    msg.set_content(body)
-
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.send_message(msg)
-    return True
 
 
 def send_employee_credentials(to_email: str, name: str, employee_id: str, password: str) -> bool:
