@@ -20,7 +20,7 @@ try:
         admin_user = User(
             name="Admin",
             email="admin@gmail.com",
-            password=hash_password("admin123"),
+            hashed_password=hash_password("admin123"),
             is_admin=True,
         )
         db.add(admin_user)
