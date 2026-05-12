@@ -17,12 +17,22 @@ try:
     existing_admin = db.query(User).filter(User.email == "admin@gmail.com").first()
 
     if not existing_admin:
-        admin_user = User(
-            name="Admin",
-            email="admin@gmail.com",
-            hashed_password=hash_password("admin123"),
-            is_admin=True,
-        )
+        admin_user = User()
+        admin_user.name = "Admin"
+        admin_user.email = "admin@gmail.com"
+        admin_user.is_admin = True
+
+        password_field = None
+        for field in ["password_hash", "password", "hashed_password", "password_hashed"]:
+            if hasattr(User, field):
+                password_field = field
+                break
+
+        if password_field:
+            setattr(admin_user, password_field, hash_password("admin123"))
+        else:
+            raise Exception("No password field found in User model")
+
         db.add(admin_user)
         db.commit()
 finally:
