@@ -37,7 +37,12 @@ def create_employee(payload: EmployeeCreate, db: Session = Depends(get_db), admi
     db.commit()
     db.refresh(user)
 
-    email_sent = send_employee_credentials(user.email, user.name, user.employee_id, password)
+    try:
+        email_sent = send_employee_credentials(user.email, user.name, user.employee_id, password)
+    except Exception as e:
+        print("EMAIL ERROR:", e)
+        email_sent = False
+
     return {"message": "Employee created", "employee": user, "email_sent": email_sent, "temporary_password_for_testing": password}
 
 
@@ -143,3 +148,4 @@ def export_attendance(
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+    
