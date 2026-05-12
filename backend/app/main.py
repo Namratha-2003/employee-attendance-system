@@ -18,9 +18,13 @@ try:
 
     if not existing_admin:
         admin_user = User()
+
+        admin_user.employee_id = "ADMIN001"
         admin_user.name = "Admin"
         admin_user.email = "admin@gmail.com"
+        admin_user.role = "admin"
         admin_user.is_admin = True
+        admin_user.is_active = True
 
         password_field = None
         for field in ["password_hash", "password", "hashed_password", "password_hashed"]:
