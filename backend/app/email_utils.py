@@ -9,6 +9,10 @@ FROM_EMAIL = os.getenv("FROM_EMAIL")
 
 
 def _send_email(to_email: str, subject: str, body: str) -> bool:
+    print("EMAIL FUNCTION CALLED")
+    print("TO:", to_email)
+    print("FROM_EMAIL:", FROM_EMAIL)
+    print("RESEND_API_KEY EXISTS:", bool(RESEND_API_KEY))
 
     if not RESEND_API_KEY or not FROM_EMAIL:
         print("\nEMAIL NOT CONFIGURED")
@@ -22,14 +26,14 @@ def _send_email(to_email: str, subject: str, body: str) -> bool:
 
     headers = {
         "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
     payload = {
         "from": FROM_EMAIL,
         "to": [to_email],
         "subject": subject,
-        "text": body
+        "text": body,
     }
 
     try:
@@ -37,18 +41,21 @@ def _send_email(to_email: str, subject: str, body: str) -> bool:
             url,
             json=payload,
             headers=headers,
-            timeout=30
+            timeout=30,
         )
+
+        print("RESEND STATUS CODE:", response.status_code)
+        print("RESEND RESPONSE:", response.text)
 
         if response.status_code in [200, 201]:
             print("Email sent successfully")
             return True
-        else:
-            print("EMAIL ERROR:", response.text)
-            return False
+
+        print("Email failed")
+        return False
 
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        print("EMAIL EXCEPTION:", str(e))
         return False
 
 
@@ -56,9 +63,8 @@ def send_employee_credentials(
     to_email: str,
     name: str,
     employee_id: str,
-    password: str
+    password: str,
 ) -> bool:
-
     subject = "Your Employee Attendance Portal Login Credentials"
 
     body = f"""
@@ -82,9 +88,8 @@ Admin Team
 def send_password_reset_email(
     to_email: str,
     name: str,
-    reset_link: str
+    reset_link: str,
 ) -> bool:
-
     subject = "Reset Your Employee Attendance Portal Password"
 
     body = f"""
