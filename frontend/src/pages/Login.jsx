@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { go } from '../services/api.js';
 
+const API_BASE =
+  import.meta.env.VITE_API_URL || 'https://employee-attendance-system-vwox.onrender.com/api';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +16,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api'}/auth/login`, {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
