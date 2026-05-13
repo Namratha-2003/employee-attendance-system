@@ -5,11 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.elasticemail.com")
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp-relay.brevo.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "2525"))
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 FROM_EMAIL = os.getenv("FROM_EMAIL")
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
+    "https://employee-attendance-system-2-q2e4.onrender.com"
+)
 
 
 def _send_email(to_email: str, subject: str, body: str) -> bool:
@@ -39,7 +43,7 @@ def _send_email(to_email: str, subject: str, body: str) -> bool:
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
 
-        print("Email sent successfully using Elastic Email SMTP")
+        print("Email sent successfully using Brevo SMTP")
         return True
 
     except Exception as e:
@@ -63,6 +67,9 @@ Your employee attendance portal account has been created.
 Employee ID: {employee_id}
 Email: {to_email}
 Temporary Password: {password}
+
+Login Link:
+{FRONTEND_URL}
 
 Please login and start marking attendance from working days only.
 
