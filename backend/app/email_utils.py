@@ -1,10 +1,14 @@
 import os
-import requests
+import smtplib
+from email.message import EmailMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.elasticemail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "2525"))
+SMTP_USER = os.getenv("SMTP_USER")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 FROM_EMAIL = os.getenv("FROM_EMAIL")
 
 
@@ -12,50 +16,34 @@ def _send_email(to_email: str, subject: str, body: str) -> bool:
     print("EMAIL FUNCTION CALLED")
     print("TO:", to_email)
     print("FROM_EMAIL:", FROM_EMAIL)
-    print("RESEND_API_KEY EXISTS:", bool(RESEND_API_KEY))
+    print("SMTP_HOST:", SMTP_HOST)
+    print("SMTP_PORT:", SMTP_PORT)
+    print("SMTP_USER EXISTS:", bool(SMTP_USER))
+    print("SMTP_PASSWORD EXISTS:", bool(SMTP_PASSWORD))
 
-    if not RESEND_API_KEY or not FROM_EMAIL:
-        print("\nEMAIL NOT CONFIGURED")
-        print(f"To: {to_email}")
-        print(f"Subject: {subject}")
-        print(body)
-        print()
+    if not SMTP_USER or not SMTP_PASSWORD or not FROM_EMAIL:
+        print("SMTP EMAIL NOT CONFIGURED")
         return False
-
-    url = "https://api.resend.com/emails"
-
-    headers = {
-        "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "from": FROM_EMAIL,
-        "to": [to_email],
-        "subject": subject,
-        "text": body,
-    }
 
     try:
-        response = requests.post(
-            url,
-            json=payload,
-            headers=headers,
-            timeout=30,
-        )
+        msg = EmailMessage()
+        msg["From"] = FROM_EMAIL
+        msg["To"] = to_email
+        msg["Subject"] = subject
+        msg.set_content(body)
 
-        print("RESEND STATUS CODE:", response.status_code)
-        print("RESEND RESPONSE:", response.text)
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
 
-        if response.status_code in [200, 201]:
-            print("Email sent successfully")
-            return True
-
-        print("Email failed")
-        return False
+        print("Email sent successfully using Elastic Email SMTP")
+        return True
 
     except Exception as e:
-        print("EMAIL EXCEPTION:", str(e))
+        print("SMTP EMAIL EXCEPTION:", str(e))
         return False
 
 
