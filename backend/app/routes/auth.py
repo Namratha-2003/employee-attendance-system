@@ -54,7 +54,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
     db.add(reset)
     db.commit()
 
-    frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+    frontend_origin = os.getenv("FRONTEND_ORIGIN", "https://employee-attendance-system-2-q2e4.onrender.com")
     reset_link = f"{frontend_origin}/reset-password?token={token}"
     email_sent = send_password_reset_email(user.email, user.name, reset_link)
     return {
